@@ -11,12 +11,22 @@ const OrdersPage = () => {
   useEffect(() => {
     const token = new URL(window.location.href).searchParams.get('token')
 
-    fetch('https://openapi.etsy.com/v3/application/shops/:shop_id/receipts', {
+    if (!token) {
+      console.error('Token not available')
+      return
+    }
+
+    fetch('http://localhost:3001/api/orders', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`)
+        }
+        return response.json()
+      })
       .then((data) => setOrders(data.results))
       .catch((error) => console.error(error))
   }, [])
